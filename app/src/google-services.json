@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "770970738338",
+    "project_id": "encryptdecrypt-cc035",
+    "storage_bucket": "encryptdecrypt-cc035.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:770970738338:android:8f82b01b8b29dd37e381fb",
+        "android_client_info": {
+          "package_name": "com.example.TestApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "770970738338-eufdv76nv4rt792feg6ebmhvr9361btm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqqs9xsLCozifF6K3cqAOAJ3vW0cQTcnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "770970738338-eufdv76nv4rt792feg6ebmhvr9361btm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:770970738338:android:3015750e57790a19e381fb",
+        "android_client_info": {
+          "package_name": "com.example.dataencryptionproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "770970738338-eufdv76nv4rt792feg6ebmhvr9361btm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqqs9xsLCozifF6K3cqAOAJ3vW0cQTcnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "770970738338-eufdv76nv4rt792feg6ebmhvr9361btm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

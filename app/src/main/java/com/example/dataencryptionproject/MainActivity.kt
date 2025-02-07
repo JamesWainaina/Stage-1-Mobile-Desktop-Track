@@ -1,19 +1,19 @@
 package com.example.dataencryptionproject
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.text.InputType
 import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseAuth
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
@@ -25,61 +25,57 @@ import javax.crypto.spec.IvParameterSpec
 
 
 class MainActivity : AppCompatActivity() {
-    private var isKeyVisible = false
-    private var isDecryptedVisible = false
+    private lateinit var auth: FirebaseAuth
+    private var currentUserEmail: String? = null //
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        auth = FirebaseAuth.getInstance()
+        currentUserEmail = auth.currentUser?.email
 
-        val plainTextInput = findViewById<EditText>(R.id.plaintext)
-        val keyInput = findViewById<EditText>(R.id.key)
-        val encryptedText = findViewById<TextView>(R.id.encryptedText)
-        val encryptedInput = findViewById<EditText>(R.id.encryptedInput)
-        val decryptKeyInput = findViewById<EditText>(R.id.decryptKey)
-        val decryptedText = findViewById<TextView>(R.id.decryptKey)
-        val encryptButton = findViewById<Button>(R.id.encryptButton)
+        val plainTextInput = findViewById<EditText>(R.id.plaintextEditText)
+        val encryptedTextView = findViewById<TextView>(R.id.encryptedTextView)
+        val encryptedInput = findViewById<EditText>(R.id.encryptedInputEditText)
         val decryptButton = findViewById<Button>(R.id.decryptButton)
-        val toggleKeyVisibility = findViewById<ImageView>(R.id.toggleKeyVisibility)
-        val toggleDecryptKeyVisibility = findViewById<ImageView>(R.id.toggleDecryptKeyVisibility)
+        val decryptKeyInput = findViewById<EditText>(R.id.decryptKeyEditText)
+        val decryptedTextView = findViewById<TextView>(R.id.decryptedTextView)
+        val encryptButton = findViewById<Button>(R.id.encryptButton)
 
-        //Toggle password visibility for the encryption key input
-        toggleKeyVisibility.setOnClickListener(){
-            isKeyVisible = !isKeyVisible
-            togglePasswordVisibility(keyInput, toggleKeyVisibility, isKeyVisible)
-        }
 
-        toggleDecryptKeyVisibility.setOnClickListener(){
-            isDecryptedVisible = !isDecryptedVisible
-            togglePasswordVisibility(decryptKeyInput, toggleDecryptKeyVisibility, isDecryptedVisible)
-        }
 
         encryptButton.setOnClickListener(){
             val plainText = plainTextInput.text.toString()
-            val key = keyInput.text.toString()
 
-            if (plainText.isNotEmpty() && key.isNotEmpty()){
+            if (plainText.isNotEmpty()){
+                // Encrypt the plain text and generate a secret key
                 val encryptedData = encrypt(this, plainText)
                 val encodedEncryptedData = Base64.encodeToString(encryptedData, Base64.DEFAULT)
-                encryptedText.text = encodedEncryptedData
-            }else{
-                Toast.makeText(this, "Please enter both PlainText and key", Toast.LENGTH_LONG).show()
+                // Display encrypted text in the TextView
+                encryptedTextView.text = encodedEncryptedData
+                encryptedTextView.visibility = TextView.VISIBLE
+
+                // Send secret key via email
+                sendEmailWithEncryptedText(encodedEncryptedData)
+            } else{
+                Toast.makeText(this, "Please enter text to encrypt",Toast.LENGTH_LONG).show()
             }
         }
 
         decryptButton.setOnClickListener() {
-            val encryptedStr = encryptedInput.text.toString()
-            val Key = decryptKeyInput.text.toString()
+            val encrypedStr = encryptedInput.text.toString()
+            val key = decryptKeyInput.text.toString()
 
-            if (encryptedStr.isNotEmpty() && Key.isNotEmpty()) {
-                // Decode the Base 64-encoded encrypted sting into a ByteArray
-                val encryptedData = Base64.decode(encryptedStr, Base64.DEFAULT)
-                // decrypt the data and display the plain text
+            if (encrypedStr.isNotEmpty() && key.isNotEmpty()){
+                // decode the base 64-encoded encrypted string into byte Array
+                val encryptedData = Base64.decode(encrypedStr, Base64.DEFAULT)
                 val decryptedData = decrypt(this, encryptedData)
-                decryptedText.text = String(decryptedData)
-            } else {
-                Toast.makeText(this, "Please enter both Encrypted Text and key", Toast.LENGTH_LONG).show()
+
+                decryptedTextView.text = String(decryptedData)
+                decryptedTextView.visibility = TextView.VISIBLE
+            }else {
+                Toast.makeText(this, "Please enter both encrypted text and secret key", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -90,30 +86,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun togglePasswordVisibility(editText : EditText?, toggleIcon: ImageView?, isVisible: Boolean) {
-        if (isVisible){
-            // show the password
-            if (editText != null) {
-                editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            }
-            if (toggleIcon != null) {
-                toggleIcon.setImageResource(R.drawable.ic_visibility_on)
-            } // change the icon to "visible"
-        } else{
-            // hide the password
-            if (editText != null) {
-                editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            }
-            if (toggleIcon != null) {
-                toggleIcon.setImageResource(R.drawable.ic_visibility_off)
-            }
-        }
-
-        // Move the cursor to the end of the text
-        if (editText != null) {
-            editText.setSelection(editText.text.length)
-        }
-    }
 
     private fun encrypt(context: Context, strToEncrypt: String): ByteArray {
         val plainText = strToEncrypt.toByteArray(Charsets.UTF_8)
@@ -172,5 +144,19 @@ class MainActivity : AppCompatActivity() {
         val bytes = Base64.decode(strInitializationVector, Base64.DEFAULT)
         val ois = ObjectInputStream(ByteArrayInputStream(bytes))
         return  ois.readObject() as ByteArray
+    }
+
+    private fun sendEmailWithEncryptedText(encryptedText: String) {
+        val subject = "Encrypted Text & Secret Key"
+        val body = "Here is your encrypted text: $encryptedText"
+
+        val emailIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "message/rfc822"
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(currentUserEmail)) // User's email
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+        }
+
+        startActivity(Intent.createChooser(emailIntent, "Send Email"))
     }
 }
