@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <!-- Plaintext Input -->
+    <EditText
+        android:id = "@+id/plaintext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Plaintext"/>
+
+    <!-- Secret Key Input with Eye Icon -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id = "@+id/key"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Enter Secret Key"
+            android:inputType="textPassword"/>
+
+        <ImageView
+            android:id="@+id/toggleKeyVisibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_visibility_off"
+            android:contentDescription="Toggle password visibility"/>
+    </LinearLayout>
+
+    <!-- Encrypt Button -->
+    <Button
+        android:id = "@+id/encryptButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text = "Encrypt"/>
+
+    <!-- Encrypted Text Display -->
+    <TextView
+        android:id="@+id/encryptedText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Encrypted Text"/>
+
+    <!-- Encrypted Input for Decryption -->
+    <EditText
+        android:id="@+id/encryptedInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Encrypted Text" />
+
+    <!-- Decryption Key Input with Eye Icon -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/decryptKey"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Enter Secret Key"
+            android:inputType="textPassword"/>
+
+        <ImageView
+            android:id="@+id/toggleDecryptKeyVisibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_visibility_off"
+            android:contentDescription="Toggle password visibility"/>
+    </LinearLayout>
+
+    <!-- Decrypt Button -->
+    <Button
+        android:id="@+id/decryptButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Decrypt"/>
+
+    <!-- Decrypted Text Display -->
+    <TextView
+        android:id="@+id/decryptText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Decrypted text"/>
+</LinearLayout>
